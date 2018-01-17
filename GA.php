@@ -194,7 +194,6 @@ try {
     if (empty($target)) {
         $target = "Tang";
     }
-    header("Content-type:text/plain");
     $test = new GA($target);
     $test->initialize();
     $test->breed(100);
