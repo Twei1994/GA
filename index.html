@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        body {text-align: center;}
+        h2 {margin-top: 100px;}
+    </style>
+</head>
+<body>
+    <h2><span id="1st"></span> <span id="2nd"></span> <span id="3rd"></span></h2>
+    <script>
+        var index1 = 0;
+        var index2 = 0;
+        var index3 = 0;
+        $(document).ready(function () {
+            $.ajax({
+                type: "post",
+                url: "GA.php",
+                data: {"target": "Too"},
+                dataType: "json",
+                success: function (data) {
+                    len = data.length;
+                    setInterval(function () {
+                        set1st(data[index1]);
+                        index1++;
+                    }, 500);
+                }
+            });
+        });
+        $(document).ready(function () {
+            $.ajax({
+                type: "post",
+                url: "GA.php",
+                data: {"target": "Young"},
+                dataType: "json",
+                success: function (data) {
+                    len = data.length;
+                    setInterval(function () {
+                        set2nd(data[index2]);
+                        index2++;
+                    }, 100);
+                }
+            });
+        });
+        $(document).ready(function () {
+            $.ajax({
+                type: "post",
+                url: "GA.php",
+                data: {"target": "naive"},
+                dataType: "json",
+                success: function (data) {
+                    len = data.length;
+                    setInterval(function () {
+                        set3rd(data[index3]);
+                        index3++;
+                    }, 100);
+                }
+            });
+        });
+
+        function set1st(str) {
+            $("#1st").html(str);
+        }
+        function set2nd(str) {
+            $("#2nd").html(str);
+        }
+        function set3rd(str) {
+            $("#3rd").html(str);
+        }
+    </script>
+</body>
+</html>
