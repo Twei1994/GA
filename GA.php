@@ -11,7 +11,7 @@ class GA {
     private $bestFit; // 每组最优适应力
 
     // 构造方法，初始化参数
-    public function __construct($target = "Tang", $hp = 0.9, $mp = 0.01, $num = 1000) {
+    public function __construct($target = "Tang", $hp = 0.9, $mp = 0.01, $num = 500) {
         if (empty($target)) {
             throw new Exception("empty string as target");
         }
@@ -62,7 +62,7 @@ class GA {
     }
 
     // 交叉和变异n代
-    public function breed($n) {
+    public function breed($n = 100) {
         $groupNum = floor($this->num/2);
         $len = $this->len;
         for ($i = 0; $i < $n; $i++) {
@@ -139,7 +139,7 @@ class GA {
 
     // 英文字符串转成二进制字符串
     private function strToBin($str) {
-        $letterIndex = array_flip(array_merge(range('A', 'Z'), range('a', 'z')));
+        $letterIndex = array_flip(array_merge(range('A', 'Z'), range('a', 'z'), array(" ", ",", ".")));
         $bin = '';
         for ($i = 0; $i < strlen($str); $i++) {
             $bin .= str_pad(decbin($letterIndex[$str[$i]]), 6, 0,STR_PAD_LEFT);
@@ -149,7 +149,7 @@ class GA {
 
     // 二进制字符串转成英文字符串
     private function binToStr($bin) {
-        $indexLetter = array_merge(range('A', 'Z'), range('a', 'z'));
+        $indexLetter = array_merge(range('A', 'Z'), range('a', 'z'), array(" ", ",", "."));
         $str = '';
         for ($i = 0; $i < strlen($bin); $i += 6) {
             $temp = substr($bin, $i, 6);
@@ -192,12 +192,39 @@ class GA {
 try {
     $target = $_POST["target"];
     if (empty($target)) {
-        $target = "Tang";
+        $target = "All or nothing, now or never.";
     }
-    $test = new GA($target);
-    $test->initialize();
-    $test->breed(100);
-    echo json_encode($test->getBestStr());
+    // 每3个字符截取，然后拼接
+    $subs = array();
+    for ($i = 0; $i < strlen($target); $i += 3) {
+        $subs[] = substr($target, $i, 3);
+    }
+
+    $subsRes = array();
+    foreach ($subs as $key => $sub) {
+        $test = new GA($sub);
+        $test->initialize();
+        $test->breed(100);
+        $subsRes[] = $test->getBestStr();
+    }
+    $outstr = array();
+    $maxLen = 0;
+    foreach ($subsRes as $subRes) {
+        if (count($subRes) > $maxLen) {
+            $maxLen = count($subRes);
+        }
+    }
+    for ($i = 0; $i < $maxLen; $i++) {
+        $temp = "";
+        foreach ($subsRes as $subRes) {
+            if (empty($subRes[$i])) {
+                $subRes[$i] = end($subRes);
+            }
+            $temp .= $subRes[$i];
+        }
+        $outstr[] = $temp;
+    }
+    echo json_encode($outstr);
 } catch (Exception $e) {
     echo $e->getMessage();
     die;
